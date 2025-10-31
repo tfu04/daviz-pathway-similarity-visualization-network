@@ -1,0 +1,127 @@
+.app {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-header {
+  background-color: #1a1a1a;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header-stats {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.header-stats span {
+  display: flex;
+  align-items: center;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.left-panel {
+  width: 280px;
+  background-color: #1e1e1e;
+  border-right: 1px solid #333;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.right-panel {
+  width: 350px;
+  background-color: #1e1e1e;
+  border-left: 1px solid #333;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.error-container h2 {
+  color: #ff6b6b;
+}
+
+.error-container p {
+  color: #aaa;
+  text-align: center;
+  max-width: 500px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .left-panel {
+    width: 240px;
+  }
+  
+  .right-panel {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    flex-direction: column;
+  }
+  
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+  }
+  
+  .main-content {
+    flex: 1;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .app-header {
+    background-color: #f5f5f5;
+    border-bottom-color: #e0e0e0;
+  }
+  
+  .left-panel,
+  .right-panel {
+    background-color: #fafafa;
+    border-color: #e0e0e0;
+  }
+  
+  .header-stats {
+    color: #666;
+  }
+}
