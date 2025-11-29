@@ -38,7 +38,7 @@ const DetailPanel = ({ element }) => {
     return (
       <div className="detail-panel">
         <div className="empty-state">
-          <p>👆 点击节点或边查看详细信息</p>
+          <p>👆 Click on a node or edge to view details</p>
         </div>
       </div>
     )
@@ -48,17 +48,17 @@ const DetailPanel = ({ element }) => {
     return (
       <div className="detail-panel">
         <div className="panel-header">
-          <h3>节点详情</h3>
+          <h3>Node Details</h3>
           <span className={`badge ${element.interpretable === 'YES' ? 'badge-success' : 'badge-default'}`}>
-            {element.interpretable === 'YES' ? '可解释' : '不可解释'}
+            {element.interpretable === 'YES' ? 'Interpretable' : 'Non-interpretable'}
           </span>
         </div>
 
         <div className="panel-content">
           <div className="info-section">
-            <h4>基本信息</h4>
+            <h4>Basic Information</h4>
             <div className="info-item">
-              <span className="info-label">疾病名称:</span>
+              <span className="info-label">Disease Name:</span>
               <span className="info-value">{element.label}</span>
             </div>
             <div className="info-item">
@@ -66,31 +66,31 @@ const DetailPanel = ({ element }) => {
               <span className="info-value info-code">{element.id}</span>
             </div>
             <div className="info-item">
-              <span className="info-label">度数:</span>
+              <span className="info-label">Degree:</span>
               <span className="info-value">{element.degree}</span>
             </div>
           </div>
 
           <div className="info-section">
-            <h4>连接统计</h4>
+            <h4>Connection Statistics</h4>
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-value">{element.statistics.totalEdges}</div>
-                <div className="stat-label">总连接数</div>
+                <div className="stat-label">Total Connections</div>
               </div>
               <div className="stat-card">
                 <div className="stat-value">{element.statistics.interpretableEdges}</div>
-                <div className="stat-label">可解释连接</div>
+                <div className="stat-label">Interpretable</div>
               </div>
               <div className="stat-card">
                 <div className="stat-value">{element.statistics.avgWeight.toFixed(4)}</div>
-                <div className="stat-label">平均权重</div>
+                <div className="stat-label">Avg Weight</div>
               </div>
             </div>
           </div>
 
           <div className="info-section">
-            <h4>连接的疾病 ({element.edges.length})</h4>
+            <h4>Connected Diseases ({element.edges.length})</h4>
             <div className="edges-list">
               {element.edges.slice(0, 20).map((edge, idx) => (
                 <div key={idx} className="edge-item">
@@ -103,13 +103,13 @@ const DetailPanel = ({ element }) => {
                     </span>
                   </div>
                   <div className="edge-weight">
-                    权重: {edge.weight.toFixed(4)}
+                    Weight: {edge.weight.toFixed(4)}
                   </div>
                 </div>
               ))}
               {element.edges.length > 20 && (
                 <div className="more-indicator">
-                  还有 {element.edges.length - 20} 个连接...
+                  {element.edges.length - 20} more connections...
                 </div>
               )}
             </div>
@@ -123,15 +123,15 @@ const DetailPanel = ({ element }) => {
     return (
       <div className="detail-panel">
         <div className="panel-header">
-          <h3>边详情</h3>
+          <h3>Edge Details</h3>
           <span className={`badge ${element.interpretable === 'YES' ? 'badge-success' : 'badge-default'}`}>
-            {element.interpretable === 'YES' ? '可解释' : '不可解释'}
+            {element.interpretable === 'YES' ? 'Interpretable' : 'Non-interpretable'}
           </span>
         </div>
 
         <div className="panel-content">
           <div className="info-section">
-            <h4>连接信息</h4>
+            <h4>Connection Information</h4>
             <div className="connection-visual">
               <div className="disease-box">{element.source}</div>
               <div className="connection-arrow">
@@ -141,7 +141,7 @@ const DetailPanel = ({ element }) => {
               <div className="disease-box">{element.target}</div>
             </div>
             <div className="info-item">
-              <span className="info-label">边 ID:</span>
+              <span className="info-label">Edge ID:</span>
               <span className="info-value info-code">{element.id}</span>
             </div>
           </div>
@@ -149,12 +149,12 @@ const DetailPanel = ({ element }) => {
           {loading ? (
             <div className="loading-section">
               <div className="small-spinner"></div>
-              <p>加载详细信息...</p>
+              <p>Loading details...</p>
             </div>
           ) : edgeDetails ? (
             <>
               <div className="info-section">
-                <h4>共享基因 ({edgeDetails.sharedGenes?.length || 0})</h4>
+                <h4>Shared Genes ({edgeDetails.sharedGenes?.length || 0})</h4>
                 {edgeDetails.sharedGenes && edgeDetails.sharedGenes.length > 0 ? (
                   <div className="genes-container">
                     <div className="genes-list">
@@ -164,12 +164,12 @@ const DetailPanel = ({ element }) => {
                     </div>
                   </div>
                 ) : (
-                  <p className="empty-text">无共享基因</p>
+                  <p className="empty-text">No shared genes</p>
                 )}
               </div>
 
               <div className="info-section">
-                <h4>共享通路 ({edgeDetails.sharedPathways?.length || 0})</h4>
+                <h4>Shared Pathways ({edgeDetails.sharedPathways?.length || 0})</h4>
                 {edgeDetails.sharedPathways && edgeDetails.sharedPathways.length > 0 ? (
                   <div className="pathways-container">
                     <div className="pathways-list">
@@ -179,18 +179,18 @@ const DetailPanel = ({ element }) => {
                     </div>
                   </div>
                 ) : (
-                  <p className="empty-text">无共享通路</p>
+                  <p className="empty-text">No shared pathways</p>
                 )}
               </div>
 
               <div className="info-section highlight-section">
-                <h4>🤖 GPT-4o 解释</h4>
+                <h4>🤖 GPT-4o Explanation</h4>
                 {edgeDetails.reason ? (
                   <div className="gpt-explanation">
                     <p>{edgeDetails.reason}</p>
                   </div>
                 ) : (
-                  <p className="empty-text">暂无解释</p>
+                  <p className="empty-text">No explanation available</p>
                 )}
               </div>
             </>

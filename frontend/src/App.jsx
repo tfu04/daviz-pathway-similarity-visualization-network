@@ -14,7 +14,7 @@ function App() {
   const [error, setError] = useState(null)
   const [focusNodeId, setFocusNodeId] = useState(null)
   const [filters, setFilters] = useState({
-    minWeight: 0.75, // 从 75th percentile 开始
+    minWeight: 8400, // 默认75th百分位
     interpretability: 'all', // 'all', 'YES', 'NO'
     limit: 500
   })
@@ -93,9 +93,9 @@ function App() {
   if (error) {
     return (
       <div className="error-container">
-        <h2>错误</h2>
+        <h2>Error</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>重新加载</button>
+        <button onClick={() => window.location.reload()}>Reload</button>
       </div>
     )
   }
@@ -107,9 +107,9 @@ function App() {
         <div className="header-stats">
           {statistics && (
             <>
-              <span>节点: {statistics.total_nodes}</span>
-              <span>边: {statistics.total_edges}</span>
-              <span>可解释: {statistics.interpretable_count} ({statistics.interpretable_percentage})</span>
+              <span>Nodes: {statistics.total_nodes}</span>
+              <span>Edges: {statistics.total_edges}</span>
+              <span>Interpretable: {statistics.interpretable_count} ({statistics.interpretable_percentage})</span>
             </>
           )}
         </div>

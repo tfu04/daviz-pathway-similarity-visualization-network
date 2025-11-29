@@ -1,6 +1,11 @@
 # Pathway Similarity Network
 
-Transcriptomic analysis of 1,300+ disease–condition pairs reveals hidden molecular relationships across diseases using agentic AI.
+**Author:** Tianqi Fu (tianqif2@illinois.edu)  
+**GitHub:** [@tfu04](https://github.com/tfu04)
+
+---
+
+Transcriptomic analysis of 1,300+ disease–condition pairs reveals hidden molecular relationships across diseases.
 
 ## Project Overview
 
@@ -14,56 +19,64 @@ This system visualizes computational biology research results showing how diseas
 
 ---
 
-## Quick Start (Phase 1 - Backend)
+## Quick Start
 
 ### Prerequisites
 - Python 3.10+
-- pip
+- Node.js 18+
+- npm or yarn
 
-### Installation and Setup
+### Backend Setup
 
-1. **Clone and navigate to project**
-   ```bash
-   cd "c:\College Stuff\2025 Fall\Independent Study"
-   ```
-
-2. **Install backend dependencies**
+1. **Install dependencies**
    ```bash
    cd backend
    pip install -r requirements.txt
    ```
 
-3. **Process CSV data**
+2. **Process CSV data**
    ```bash
    python data_processor.py
    ```
    
-   This creates `backend/data/processed_network.json` from `pathway_network_result_with_gpt4o_evaluation.csv`.
+   This creates `backend/data/processed_network.json` from the source CSV.
 
-4. **Start the backend server**
+3. **Start the backend server**
    ```bash
-   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   uvicorn main:app --reload
    ```
    
-   Server runs at http://localhost:8000
+   Backend API runs at http://localhost:8000
 
-5. **Test the API**
+### Frontend Setup
+
+1. **Install dependencies**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Start the development server**
+   ```bash
+   npm run dev
+   ```
    
-   Open another terminal and run:
-   ```powershell
+   Frontend app runs at http://localhost:3000
+
+### Quick Test
+   
+   Visit http://localhost:8000/docs for interactive API documentation.
+   
+   Or test via command line:
+   ```bash
    # Health check
    curl http://localhost:8000/health
    
    # Get network statistics
    curl http://localhost:8000/stats
    
-   # Get filtered network (weight >= 30000, limit 10 edges)
+   # Get filtered network
    curl "http://localhost:8000/network?min_weight=30000&limit=10"
-   ```
-   
-   Or run the test script:
-   ```bash
-   python test_api.py
    ```
 
 ---
@@ -148,24 +161,26 @@ Returns all edges connected to the specified disease.
 ## Project Structure
 
 ```
-c:\College Stuff\2025 Fall\Independent Study\
+pathway-similarity-network/
 ├── pathway_network_result_with_gpt4o_evaluation.csv  # Source data
-├── README.md                                          # This file
+├── README.md                                          # Main documentation
 ├── docker-compose.yml                                 # Docker orchestration
 │
-├── backend/                         # FastAPI backend (Phase 1 ✅)
-│   ├── main.py                      # FastAPI application with all endpoints
-│   ├── data_processor.py            # CSV → JSON converter
-│   ├── test_api.py                  # API test suite
+├── backend/                         # FastAPI backend
+│   ├── main.py                      # FastAPI application
+│   ├── data_processor.py            # CSV to JSON converter
 │   ├── requirements.txt             # Python dependencies
 │   ├── Dockerfile                   # Docker configuration
-│   ├── README.md                    # Backend documentation
-│   ├── .gitignore                   # Git ignore rules
 │   └── data/
-│       └── processed_network.json   # Generated network JSON
+│       └── processed_network.json   # Generated network data
 │
-└── frontend/                        # React + Cytoscape.js (Phase 2 - Coming Soon)
-    └── (to be built)
+└── frontend/                        # React + Cytoscape.js visualization
+    ├── src/
+    │   ├── components/              # React components
+    │   ├── services/                # API integration
+    │   └── App.jsx                  # Main application
+    ├── package.json                 # Node dependencies
+    └── vite.config.js               # Vite configuration
 ```
 
 ---
@@ -232,27 +247,29 @@ similarity = Σ [ log(1 - p₁ₖ) + log(1 - p₂ₖ) ]
 
 ---
 
-## Development Roadmap
+## Features
 
-### ✅ Phase 1: Backend (Current - COMPLETED)
-- [x] CSV to JSON conversion script
-- [x] FastAPI backend with 7 core endpoints
-- [x] Filtering (min_weight, interpretability, limit)
-- [x] Disease search functionality
-- [x] Docker support
-- [x] API documentation (Swagger UI)
-- [x] Test suite
+### Backend (FastAPI)
+- ✅ RESTful API with 7 endpoints
+- ✅ Data processing pipeline (CSV to JSON)
+- ✅ Advanced filtering (weight, interpretability, limit)
+- ✅ Disease search functionality
+- ✅ Network statistics computation
+- ✅ Docker support
+- ✅ Interactive API documentation (Swagger UI)
 
-### 🚧 Phase 2: Frontend (Next)
-- [ ] React application setup
-- [ ] Cytoscape.js network visualization
-- [ ] Interactive node/edge selection
-- [ ] Details panel with GPT-4o explanations
-- [ ] Dynamic filtering UI (sliders, dropdowns)
-- [ ] Node coloring by interpretability
-- [ ] Edge thickness by weight
+### Frontend (React + Cytoscape.js)
+- ✅ Interactive network visualization
+- ✅ Multiple layout algorithms (COSE Bilkent, Cola, Circle, Grid)
+- ✅ Node/edge selection with detail panels
+- ✅ Real-time filtering and search
+- ✅ GPT-4o interpretability annotations
+- ✅ Color-coded nodes by interpretability
+- ✅ Weight-based edge thickness
+- ✅ Export network as PNG
+- ✅ Responsive design
 
-### 🔮 Phase 3: Advanced Features (Future)
+### Future Enhancements
 - [ ] Export network (PNG, JSON, GraphML)
 - [ ] User annotations and notes
 - [ ] Integration with NCBI, UniProt
@@ -263,9 +280,9 @@ similarity = Σ [ log(1 - p₁ₖ) + log(1 - p₂ₖ) ]
 
 ## Testing
 
-### Manual Testing with curl (PowerShell)
+### API Testing
 
-```powershell
+```bash
 # Health check
 curl http://localhost:8000/health
 
@@ -360,19 +377,15 @@ uvicorn main:app --reload --port 8001
 
 ---
 
-## Academic Context
+## Research Background
 
-This project is part of an undergraduate independent study under the guidance of a professor and MS student. The implementation focuses on:
+This visualization system is based on research from:
 
-1. **No algorithm reimplementation** - Results are pre-computed
-2. **Visualization focus** - Making results interpretable and interactive
-3. **Full-stack engineering** - Backend API + Frontend visualization
-4. **Research communication** - Presenting complex biology in an accessible way
+**Paper**: [*Discovering hidden relationships between diseases using transcriptomic data*](https://arxiv.org/abs/2508.04742)  
+**Public pre-print**: August 2025  
+**Methods**: Lasso regression for gene selection, bidirectional hypergeometric testing for gene-level similarity, and pathway enrichment analysis
 
-### Paper Reference
-- Title: *Discovering hidden relationships between diseases using transcriptomic data*
-- Publication Date: 2024-09-12
-- Methods: Lasso regression, hypergeometric testing, enrichment analysis
+The system visualizes pre-computed results, focusing on making complex biological relationships interpretable and interactive.
 
 ---
 
@@ -382,16 +395,38 @@ This project is for academic research purposes.
 
 ## Acknowledgments
 
-- Research paper authors
-- Professor and MS student collaborators
+- Professor [Haohan Wang](https://haohanwang.ischool.illinois.edu/)
+- [Ke Chen](https://github.com/KeeeeChen)
 - GPT-4o for interpretability annotations
 
 ---
 
-## Next Steps
+## Getting Started
 
-1. ✅ **Completed**: Backend API with CSV processing and filtering
-2. **Up Next**: Build React frontend with Cytoscape.js
-3. **Test Phase 1**: Run `python test_api.py` to verify backend
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/tfu04/pathway_similarity_visualization_network.git
+   cd pathway_similarity_visualization_network
+   ```
 
-**Ready to visualize disease networks! 🧬**
+2. **Start the backend** (see Backend Setup above)
+
+3. **Start the frontend** (see Frontend Setup above)
+
+4. **Explore the visualization** at http://localhost:3000
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests.
+
+## Citation
+
+If you use this visualization tool in your research, please cite the original paper:
+
+```bibtex
+@article{pathway2024,
+  title={Discovering hidden relationships between diseases using transcriptomic data},
+  year={2025},
+  month={August}
+}
+```

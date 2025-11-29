@@ -376,13 +376,13 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       {loading && (
         <div className="loading-overlay">
           <div className="spinner"></div>
-          <p>加载网络数据中...</p>
+          <p>Loading network data...</p>
         </div>
       )}
       
       <div className="network-controls">
         <div className="control-group">
-          <label>布局算法:</label>
+          <label>Layout Algorithm:</label>
           <select 
             value={layoutName} 
             onChange={(e) => handleLayoutChange(e.target.value)}
@@ -397,14 +397,14 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
         </div>
         
         <div className="control-buttons">
-          <button onClick={handleFitView} disabled={loading || !data} title="适应视图">
-            🔍 适应视图
+          <button onClick={handleFitView} disabled={loading || !data} title="Fit to view">
+            🔍 Fit View
           </button>
-          <button onClick={handleResetZoom} disabled={loading || !data} title="重置缩放">
-            ⟲ 重置
+          <button onClick={handleResetZoom} disabled={loading || !data} title="Reset zoom">
+            ⟲ Reset
           </button>
-          <button onClick={handleExportImage} disabled={loading || !data} title="导出图片">
-            📷 导出
+          <button onClick={handleExportImage} disabled={loading || !data} title="Export image">
+            📷 Export
           </button>
         </div>
       </div>
@@ -414,11 +414,11 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       <div className="network-legend">
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#4CAF50' }}></span>
-          <span>可解释 (YES)</span>
+          <span>Interpretable (YES)</span>
         </div>
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#9E9E9E' }}></span>
-          <span>不可解释 (NO)</span>
+          <span>Non-interpretable (NO)</span>
         </div>
       </div>
     </div>

@@ -54,22 +54,14 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
     setSearchQuery('')
   }
 
-  const getWeightLabel = (weight) => {
-    if (weight === 0) return '无过滤'
-    if (weight === 0.5) return '中等'
-    if (weight === 0.75) return '较高'
-    if (weight === 0.9) return '很高'
-    return weight.toFixed(2)
-  }
-
   return (
     <div className="filter-panel">
       <div className="panel-section">
-        <h3>搜索疾病</h3>
+        <h3>Search Diseases</h3>
         <div className="search-container">
           <input
             type="text"
-            placeholder="输入疾病名称..."
+            placeholder="Enter disease name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => searchResults.length > 0 && setShowResults(true)}
@@ -88,7 +80,7 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
                 >
                   <div className="result-name">{result.label}</div>
                   <div className="result-meta">
-                    {result.edge_count} 连接
+                    {result.edge_count} connections
                   </div>
                 </div>
               ))}
@@ -98,14 +90,14 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
       </div>
 
       <div className="panel-section">
-        <h3>权重过滤</h3>
+        <h3>Weight Filter</h3>
         <div className="filter-control">
           <div className="slider-container">
             <input
               type="range"
               min="0"
-              max="1"
-              step="0.05"
+              max="20000"
+              step="100"
               value={filters.minWeight}
               onChange={handleWeightChange}
               disabled={loading}
@@ -114,33 +106,33 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
             <div className="slider-labels">
               <span>0</span>
               <span className="current-value">
-                {getWeightLabel(filters.minWeight)}
+                {filters.minWeight.toFixed(0)}
               </span>
-              <span>1</span>
+              <span>20k</span>
             </div>
           </div>
           <p className="filter-description">
-            最小权重: <strong>{filters.minWeight.toFixed(2)}</strong>
+            Minimum weight: <strong>{filters.minWeight.toFixed(0)}</strong>
           </p>
           
           {statistics && (
             <div className="weight-info">
               <div className="info-row">
-                <span>权重范围:</span>
+                <span>Weight range:</span>
                 <span>
                   {statistics.weight_range?.min?.toFixed(2) || 'N/A'} - {statistics.weight_range?.max?.toFixed(2) || 'N/A'}
                 </span>
               </div>
               <div className="info-row">
-                <span>中位数:</span>
+                <span>Median:</span>
                 <span>{statistics.weight_percentiles?.['50th']?.toFixed(2) || 'N/A'}</span>
               </div>
               <div className="info-row">
-                <span>75th 百分位:</span>
+                <span>75th percentile:</span>
                 <span>{statistics.weight_percentiles?.['75th']?.toFixed(2) || 'N/A'}</span>
               </div>
               <div className="info-row">
-                <span>90th 百分位:</span>
+                <span>90th percentile:</span>
                 <span>{statistics.weight_percentiles?.['90th']?.toFixed(2) || 'N/A'}</span>
               </div>
             </div>
@@ -153,34 +145,34 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
             disabled={loading}
             className={filters.minWeight === 0 ? 'active' : ''}
           >
-            全部
+            All
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 0.5 })}
+            onClick={() => onFilterChange({ minWeight: 3600 })}
             disabled={loading}
-            className={filters.minWeight === 0.5 ? 'active' : ''}
+            className={filters.minWeight === 3600 ? 'active' : ''}
           >
-            中等
+            Median
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 0.75 })}
+            onClick={() => onFilterChange({ minWeight: 8400 })}
             disabled={loading}
-            className={filters.minWeight === 0.75 ? 'active' : ''}
+            className={filters.minWeight === 8400 ? 'active' : ''}
           >
-            较高
+            75%
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 0.9 })}
+            onClick={() => onFilterChange({ minWeight: 16000 })}
             disabled={loading}
-            className={filters.minWeight === 0.9 ? 'active' : ''}
+            className={filters.minWeight === 16000 ? 'active' : ''}
           >
-            很高
+            90%
           </button>
         </div>
       </div>
 
       <div className="panel-section">
-        <h3>可解释性</h3>
+        <h3>Interpretability</h3>
         <div className="filter-control">
           <select
             value={filters.interpretability}
@@ -188,9 +180,9 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
             disabled={loading}
             className="interpretability-select"
           >
-            <option value="all">全部</option>
-            <option value="YES">仅可解释 (YES)</option>
-            <option value="NO">仅不可解释 (NO)</option>
+            <option value="all">All</option>
+            <option value="YES">Interpretable only (YES)</option>
+            <option value="NO">Non-interpretable only (NO)</option>
           </select>
           
           {statistics && (
@@ -198,7 +190,7 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
               <div className="stat-bar">
                 <div className="stat-bar-label">
                   <span className="stat-dot yes"></span>
-                  可解释 ({statistics.interpretable_count || 0})
+                  Interpretable ({statistics.interpretable_count || 0})
                 </div>
                 <div className="stat-bar-container">
                   <div
@@ -214,7 +206,7 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
               <div className="stat-bar">
                 <div className="stat-bar-label">
                   <span className="stat-dot no"></span>
-                  不可解释 ({statistics.uninterpretable_count || 0})
+                  Non-interpretable ({statistics.uninterpretable_count || 0})
                 </div>
                 <div className="stat-bar-container">
                   <div
@@ -232,7 +224,7 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
       </div>
 
       <div className="panel-section">
-        <h3>显示限制</h3>
+        <h3>Display Limit</h3>
         <div className="filter-control">
           <select
             value={filters.limit}
@@ -240,15 +232,13 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
             disabled={loading}
             className="limit-select"
           >
-            <option value="100">100 条边</option>
-            <option value="200">200 条边</option>
-            <option value="500">500 条边</option>
-            <option value="1000">1000 条边</option>
-            <option value="2000">2000 条边</option>
-            <option value="5000">5000 条边</option>
+            <option value="100">100 edges</option>
+            <option value="200">200 edges</option>
+            <option value="500">500 edges</option>
+            <option value="1055">1055 edges (Max)</option>
           </select>
           <p className="filter-description">
-            限制显示的边数量以提高性能
+            Limit the number of edges to improve performance
           </p>
         </div>
       </div>
@@ -257,13 +247,13 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
         <button
           className="reset-button"
           onClick={() => onFilterChange({
-            minWeight: 0.75,
+            minWeight: 8400,
             interpretability: 'all',
             limit: 500
           })}
           disabled={loading}
         >
-          重置过滤器
+          Reset Filters
         </button>
       </div>
     </div>

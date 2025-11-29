@@ -1,117 +1,135 @@
 # Disease Network Visualization - Frontend
 
-这是一个基于 React 和 Cytoscape.js 的疾病网络可视化前端应用。
+Interactive web application for exploring disease-disease relationships using network visualization.
 
-## 🚀 技术栈
+## Author
 
-- **React 18.3.1** - 现代化的 UI 框架
-- **Vite 5.4.10** - 快速的构建工具
-- **Cytoscape.js 3.30.2** - 强大的网络图可视化库
-- **Axios 1.7.7** - HTTP 客户端
-- **Cola & COSE Bilkent** - 高级图布局算法
+**Tianqi Fu**  
+Email: tianqif2@illinois.edu  
+GitHub: [@tfu04](https://github.com/tfu04)
 
-## 📦 安装与运行
+## Overview
 
-### 方式 1: 使用启动脚本（推荐）
+React-based frontend application that visualizes disease similarity networks using Cytoscape.js. Features interactive exploration, real-time filtering, and detailed information panels with GPT-4o interpretability annotations.
 
-**Windows:**
+## Features
+
+- **Interactive Network Visualization**: Cytoscape.js powered graph rendering
+- **Multiple Layout Algorithms**: COSE Bilkent, Cola, Circle, Grid, Random
+- **Dynamic Filtering**: Weight threshold, interpretability, edge count limits
+- **Search Functionality**: Real-time disease search with autocomplete
+- **Detail Panels**: Comprehensive node and edge information
+- **GPT-4o Annotations**: AI-generated interpretability explanations
+- **Export Capabilities**: Download network visualizations as PNG
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ or higher
+- npm or yarn package manager
+- Backend API running at http://localhost:8000
+
+### Installation
+
 ```bash
-.\start_frontend.bat
-```
+# Navigate to frontend directory
+cd frontend
 
-**Linux/Mac:**
-```bash
-chmod +x start_frontend.sh
-./start_frontend.sh
-```
-
-### 方式 2: 手动启动
-
-```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动开发服务器
+# Start development server
 npm run dev
-
-# 构建生产版本
-npm run build
-
-# 预览生产版本
-npm run preview
 ```
 
-## 🌐 访问地址
+Application will be available at http://localhost:3000
 
-- 前端应用: http://localhost:3000
-- 后端 API: http://localhost:8000
-- API 文档: http://localhost:8000/docs
+## Technology Stack
 
-## 🎨 功能特性
+| Package | Version | Purpose |
+|---------|---------|---------|
+| React | 18.3.1 | UI framework |
+| Vite | 5.4.10 | Build tool and dev server |
+| Cytoscape.js | 3.30.2 | Network visualization |
+| cytoscape-cola | 2.5.1 | Cola layout algorithm |
+| cytoscape-cose-bilkent | 4.1.0 | COSE Bilkent layout |
+| Axios | 1.7.7 | HTTP client |
+| ESLint | 9.13.0 | Code linting |
 
-### 1. 网络可视化
-- ✅ Cytoscape.js 网络渲染
-- ✅ 多种布局算法（COSE Bilkent, Cola, Circle, Grid）
-- ✅ 节点着色（绿色=可解释，灰色=不可解释）
-- ✅ 边宽度基于权重的 log 变换
-- ✅ 缩放、平移、拖拽交互
-- ✅ 导出为 PNG 图片
+## Usage Guide
 
-### 2. 交互功能
-- ✅ 节点点击显示连接疾病和统计信息
-- ✅ 边点击显示共享基因、通路和 GPT-4o 解释
-- ✅ 高亮邻居节点和边
-- ✅ 点击空白处取消选择
+### Basic Navigation
 
-### 3. 过滤和搜索
-- ✅ 权重阈值滑块（0-1）
-- ✅ 快速过滤按钮（全部/中等/较高/很高）
-- ✅ 可解释性过滤（全部/YES/NO）
-- ✅ 显示数量限制（100-5000 条边）
-- ✅ 疾病名称搜索（防抖、自动完成）
+1. **View Network**
+   - Network loads automatically on start
+   - Default filter: Weight ≥ 8400 (75th percentile)
+   - Default display: 500 edges
 
-### 4. 详情面板
-- ✅ 节点详情：基本信息、连接统计、连接的疾病列表
-- ✅ 边详情：连接信息、共享基因列表、共享通路列表
-- ✅ **GPT-4o 解释高亮显示**
-- ✅ 实时数据加载
+2. **Explore Network**
+   - **Pan**: Click and drag background
+   - **Zoom**: Mouse wheel or pinch gesture
+   - **Select Node**: Click on any disease node
+   - **Select Edge**: Click on connection line
+   - **Deselect**: Click on empty space
 
-### 5. 用户体验
-- ✅ 响应式布局（支持移动端）
-- ✅ 加载状态指示器
-- ✅ 深色/浅色主题自适应
-- ✅ 自定义滚动条样式
-- ✅ 平滑动画和过渡效果
+3. **Apply Filters**
+   - **Weight Filter**: Adjust slider to set minimum weight
+   - **Quick Filters**: Buttons for All, Median, 75%, 90%
+   - **Interpretability**: Filter by YES/NO/All
+   - **Edge Limit**: Set maximum edges to display (100-1055)
+   - **Reset**: Click "Reset Filters" to restore defaults
 
-## 📁 项目结构
+4. **Search Diseases**
+   - Type disease name in search box
+   - Select from autocomplete dropdown
+   - Network automatically focuses on selected disease
+
+5. **View Details**
+   - **Node Details**: Disease info, connections, statistics
+   - **Edge Details**: Shared genes, pathways, GPT-4o explanation
+
+6. **Change Layout**
+   - Select algorithm from dropdown menu
+   - **COSE Bilkent**: Force-directed (default, best for large networks)
+   - **Cola**: Constrained layout
+   - **Circle**: Circular arrangement
+   - **Grid**: Grid-based layout
+   - **Random**: Random positioning
+
+7. **Export**
+   - Click "📷 Export" button
+   - Downloads PNG at 2x resolution
+
+## Project Structure
 
 ```
 frontend/
 ├── src/
-│   ├── components/          # React 组件
-│   │   ├── NetworkVisualization.jsx   # 网络可视化主组件
-│   │   ├── NetworkVisualization.css
-│   │   ├── DetailPanel.jsx            # 详情面板组件
-│   │   ├── DetailPanel.css
-│   │   ├── FilterPanel.jsx            # 过滤控制组件
-│   │   └── FilterPanel.css
-│   ├── services/            # API 服务层
-│   │   └── api.js          # Axios 实例和 API 封装
-│   ├── App.jsx             # 主应用组件
-│   ├── App.css             # 主应用样式
-│   ├── main.jsx            # 应用入口
-│   └── index.css           # 全局样式
-├── public/                 # 静态资源
-├── index.html             # HTML 模板
-├── vite.config.js         # Vite 配置
-├── package.json           # 依赖配置
-├── start_frontend.bat     # Windows 启动脚本
-└── start_frontend.sh      # Unix 启动脚本
+│   ├── components/
+│   │   ├── NetworkVisualization.jsx    # Main network component
+│   │   ├── NetworkVisualization.css    # Network styles
+│   │   ├── DetailPanel.jsx             # Details sidebar
+│   │   ├── DetailPanel.css             # Details styles
+│   │   ├── FilterPanel.jsx             # Controls sidebar
+│   │   └── FilterPanel.css             # Filter styles
+│   ├── services/
+│   │   └── api.js                      # API client
+│   ├── App.jsx                         # Root component
+│   ├── App.css                         # App styles
+│   ├── main.jsx                        # Entry point
+│   └── index.css                       # Global styles
+├── public/                             # Static assets
+├── index.html                          # HTML template
+├── vite.config.js                      # Vite configuration
+├── package.json                        # Dependencies
+└── README.md                           # This file
 ```
 
-## 🔌 API 集成
+## API Integration
 
-前端通过 Vite 代理连接到后端 API：
+Frontend connects to backend API via Vite proxy:
 
 ```javascript
 // vite.config.js
@@ -124,153 +142,190 @@ proxy: {
 }
 ```
 
-使用的 API 端点：
-- `GET /network` - 获取网络数据（支持过滤）
-- `GET /disease/{id}` - 获取特定疾病的边
-- `GET /edge/{id}` - 获取边的详细信息
-- `GET /search` - 搜索疾病
-- `GET /stats` - 获取统计信息
-- `GET /health` - 健康检查
+### API Endpoints Used
 
-## 🎯 使用说明
+- `GET /network` - Fetch network data with filters
+- `GET /disease/{id}` - Get edges for specific disease
+- `GET /edge/{id}` - Get detailed edge information
+- `GET /search` - Search diseases by keyword
+- `GET /stats` - Fetch network statistics
+- `GET /health` - Health check
 
-### 基本操作
+## Development
 
-1. **查看网络**
-   - 启动应用后，网络会自动加载并显示
-   - 默认过滤：权重 ≥ 0.75（75th percentile）
-   - 默认显示：500 条边
+### Scripts
 
-2. **浏览网络**
-   - 鼠标拖拽：平移视图
-   - 滚轮：缩放视图
-   - 点击节点/边：查看详情
-   - 点击空白：取消选择
-
-3. **应用过滤器**
-   - 左侧面板调整权重阈值
-   - 选择可解释性过滤
-   - 调整显示数量限制
-   - 点击"重置过滤器"恢复默认
-
-4. **搜索疾病**
-   - 在搜索框输入疾病名称
-   - 从下拉列表选择结果
-   - 自动高亮相关节点
-
-5. **查看详情**
-   - **节点详情**：疾病名称、连接统计、相关疾病列表
-   - **边详情**：共享基因、共享通路、GPT-4o 解释
-
-6. **导出图片**
-   - 点击"📷 导出"按钮
-   - 自动下载 PNG 图片（2倍分辨率）
-
-### 高级功能
-
-- **切换布局算法**：顶部下拉菜单选择不同布局
-- **适应视图**：点击"🔍 适应视图"自动调整缩放
-- **重置缩放**：点击"⟲ 重置"恢复默认视图
-
-## 🐛 故障排除
-
-### 前端无法连接到后端
-
-1. 确认后端服务已启动：
 ```bash
-cd ../backend
-python main.py
-```
+# Start development server
+npm run dev
 
-2. 检查后端地址：http://localhost:8000/health
+# Build for production
+npm run build
 
-3. 检查浏览器控制台错误信息
+# Preview production build
+npm run preview
 
-### 网络无法显示
-
-1. 检查后端数据是否已处理：
-```bash
-cd ../backend
-python data_processor.py
-```
-
-2. 确认 `backend/data/processed_network.json` 文件存在
-
-3. 清除浏览器缓存并刷新
-
-### 性能问题
-
-1. 减少显示的边数量（左侧面板）
-2. 提高权重阈值过滤
-3. 使用更快的布局算法（Grid 或 Circle）
-
-## 📊 数据说明
-
-### 节点（疾病）
-- **ID**: 疾病唯一标识符
-- **Label**: 疾病名称
-- **Interpretable**: 是否有 GPT-4o 解释
-
-### 边（疾病关系）
-- **Weight**: 疾病相似度（0-1）
-- **Shared Genes**: 共享的差异表达基因
-- **Shared Pathways**: 共享的信号通路
-- **Reason (GPT-4o)**: AI 生成的关系解释
-
-## 🔄 开发模式
-
-### 热重载
-Vite 提供快速的热模块替换（HMR），修改代码后自动刷新。
-
-### ESLint
-运行代码检查：
-```bash
+# Run linter
 npm run lint
 ```
 
-### 构建生产版本
+### Environment Variables
+
+Create `.env` file:
+
 ```bash
-npm run build
+VITE_API_URL=http://localhost:8000
+VITE_APP_TITLE=Disease Network Visualization
 ```
-输出到 `dist/` 目录。
 
-## 📝 依赖版本（2025年10月最新）
+### Hot Module Replacement
 
-| 包名 | 版本 | 用途 |
-|------|------|------|
-| react | 18.3.1 | UI 框架 |
-| react-dom | 18.3.1 | React DOM 渲染 |
-| cytoscape | 3.30.2 | 网络图可视化 |
-| cytoscape-cola | 2.5.1 | Cola 布局算法 |
-| cytoscape-cose-bilkent | 4.1.0 | COSE Bilkent 布局 |
-| axios | 1.7.7 | HTTP 客户端 |
-| vite | 5.4.10 | 构建工具 |
-| @vitejs/plugin-react | 4.3.3 | React 插件 |
-| eslint | 9.13.0 | 代码检查 |
+Vite provides fast HMR - changes appear instantly without full reload.
 
-## 🎨 自定义样式
+## Customization
 
-### 修改主题颜色
-编辑 `src/index.css` 中的 CSS 变量：
+### Theme Colors
+
+Edit `src/index.css`:
+
 ```css
 :root {
   --primary-color: #646cff;
   --success-color: #4CAF50;
   --background-color: #242424;
+  --text-color: #ffffff;
 }
 ```
 
-### 修改节点样式
-编辑 `src/components/NetworkVisualization.jsx` 中的 Cytoscape 样式配置。
+### Node Styling
 
-## 🤝 贡献
+Edit Cytoscape styles in `src/components/NetworkVisualization.jsx`:
 
-欢迎提交 Issue 和 Pull Request！
+```javascript
+{
+  selector: 'node',
+  style: {
+    'background-color': '#4CAF50',  // Change node color
+    'width': 50,                     // Change node size
+    'label': 'data(label)',          // Node label
+  }
+}
+```
 
-## 📄 许可证
+### Edge Styling
 
-MIT License
+```javascript
+{
+  selector: 'edge',
+  style: {
+    'width': (ele) => Math.log(ele.data('weight') + 1) * 0.3,
+    'line-color': '#66BB6A',
+    'opacity': 0.3
+  }
+}
+```
 
----
+## Performance Optimization
 
-**🎉 享受探索疾病网络的乐趣！**
+### Best Practices
+
+1. **Limit Edge Count**: Use display limit filter (100-500 edges)
+2. **Increase Weight Threshold**: Filter out low-weight edges
+3. **Use Fast Layouts**: Grid or Circle for large networks
+4. **Reduce Animation**: Disable transitions for better performance
+
+### Troubleshooting
+
+#### Frontend won't start
+
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### Cannot connect to backend
+
+1. Verify backend is running: http://localhost:8000/health
+2. Check proxy configuration in `vite.config.js`
+3. Check browser console for CORS errors
+
+#### Network won't display
+
+1. Check if data is loaded in network panel
+2. Verify backend has processed data
+3. Open browser DevTools and check console errors
+
+#### Performance issues
+
+1. Reduce edge count limit
+2. Increase weight threshold
+3. Use simpler layout (Grid or Circle)
+4. Close other browser tabs
+
+## Build and Deployment
+
+### Production Build
+
+```bash
+npm run build
+```
+
+Output directory: `dist/`
+
+### Serve Static Files
+
+```bash
+# Using Python
+python -m http.server -d dist 3000
+
+# Using Node.js serve
+npx serve dist -p 3000
+```
+
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t disease-network-frontend .
+
+# Run container
+docker run -p 3000:80 disease-network-frontend
+```
+
+## Browser Support
+
+- Chrome/Edge: Latest 2 versions
+- Firefox: Latest 2 versions
+- Safari: Latest 2 versions
+- Mobile: iOS Safari 12+, Chrome Android
+
+## Data Visualization
+
+### Node Colors
+
+- 🟢 **Green**: Interpretable relationship (GPT-4o: YES)
+- ⚪ **Gray**: Non-interpretable relationship (GPT-4o: NO)
+- 🔵 **Blue Border**: Selected node
+- 🟠 **Orange Highlight**: Neighbor nodes
+
+### Edge Properties
+
+- **Width**: Proportional to weight (log scale)
+- **Color**: Matches interpretability (green or gray)
+- **Opacity**: 30% default, 100% when selected
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible labels
+- High contrast mode support
+- Focus indicators on interactive elements
+
+## Support
+
+For issues and questions:
+- Open an issue on GitHub
+- Check browser console for errors
+- Review API documentation
+- Ensure backend is running properly
