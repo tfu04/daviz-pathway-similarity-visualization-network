@@ -1,4 +1,4 @@
-# Pathway Similarity Network
+# DAViz: Disease Association Visualization
 
 **Author:** Tianqi Fu (tianqif2@illinois.edu)  
 **GitHub:** [@tfu04](https://github.com/tfu04)
@@ -396,7 +396,7 @@ This project is for academic research purposes.
 ## Acknowledgments
 
 - Professor [Haohan Wang](https://haohanwang.ischool.illinois.edu/)
-- [Ke Chen](https://github.com/KeeeeChen)
+- [Ke Chen](https://scholar.google.com/citations?user=22snSGMAAAAJ)
 - GPT-4o for interpretability annotations
 
 ---
