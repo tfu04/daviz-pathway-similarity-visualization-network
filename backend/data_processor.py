@@ -9,6 +9,8 @@ import json
 import numpy as np
 from typing import Dict, List, Any
 import logging
+import os
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -187,6 +189,11 @@ def main():
     # Paths - CSV is in parent directory, output in backend/data
     csv_path = '../pathway_network_result_with_gpt4o_evaluation.csv'
     output_path = 'data/processed_network.json'
+    
+    output_dir = os.path.dirname(output_path)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        logger.info(f"Created directory: {output_dir}")
     
     # Process data
     processor = NetworkDataProcessor(csv_path)
