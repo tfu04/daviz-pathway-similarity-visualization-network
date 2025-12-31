@@ -4,7 +4,7 @@ import cola from 'cytoscape-cola'
 import coseBilkent from 'cytoscape-cose-bilkent'
 import './NetworkVisualization.css'
 
-// 注册布局算法
+// Register layout algorithms
 cytoscape.use(cola)
 cytoscape.use(coseBilkent)
 
@@ -13,17 +13,17 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
   const cyRef = useRef(null)
   const [layoutName, setLayoutName] = useState('cose-bilkent')
 
-  // 初始化 Cytoscape 实例（只运行一次）
+  // Initialize Cytoscape instance (runs once)
   useEffect(() => {
     if (!containerRef.current) return
-    if (cyRef.current) return // 如果已经存在，不重新创建
+    if (cyRef.current) return
 
-    // 初始化 Cytoscape
+    // Initialize Cytoscape
     const cy = cytoscape({
       container: containerRef.current,
       elements: data,
       style: [
-        // 节点样式
+        // Node styles
         {
           selector: 'node',
           style: {
@@ -48,7 +48,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             'min-zoomed-font-size': 8
           }
         },
-        // 选中节点样式
         {
           selector: 'node:selected',
           style: {
@@ -60,13 +59,11 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             }
           }
         },
-        // 边样式
         {
           selector: 'edge',
           style: {
             'width': (ele) => {
               const weight = ele.data('weight') || 0
-              // 更细的边，减少视觉混乱
               return Math.max(0.5, Math.log(weight + 1) * 0.3)
             },
             'line-color': (ele) => {
@@ -81,7 +78,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             'opacity': 0.3
           }
         },
-        // 选中边样式
         {
           selector: 'edge:selected',
           style: {
@@ -95,7 +91,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             'z-index': 999
           }
         },
-        // 高亮邻居节点
         {
           selector: 'node.highlighted',
           style: {
@@ -104,7 +99,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             'z-index': 9999
           }
         },
-        // 高亮邻居边
         {
           selector: 'edge.highlighted',
           style: {
@@ -121,7 +115,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       ],
       layout: {
         name: layoutName,
-        // cose-bilkent 特定参数 - 更大的间距
         idealEdgeLength: 250,
         nodeRepulsion: 12000,
         edgeElasticity: 0.25,
@@ -137,21 +130,19 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       },
       minZoom: 0.05,
       maxZoom: 10,
-      wheelSensitivity: 0.3
+      wheelSensitivity: 1.3
     })
 
     cyRef.current = cy
 
-    // 清理函数
     return () => {
       if (cyRef.current) {
         cyRef.current.destroy()
         cyRef.current = null
       }
     }
-  }, []) // 空依赖数组，只初始化一次
+  }, [])
 
-  // 设置事件监听器
   useEffect(() => {
     const cy = cyRef.current
     if (!cy) return
@@ -159,16 +150,13 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     const handleNodeTap = (evt) => {
       const node = evt.target
       
-      // 清除之前的高亮和选择
       cy.elements().removeClass('highlighted')
       cy.elements().unselect()
       
-      // 高亮当前节点的邻居（橙色）
       const neighbors = node.neighborhood()
       node.addClass('highlighted')
       neighbors.addClass('highlighted')
       
-      // 收集节点信息
       const connectedEdges = node.connectedEdges()
       const edgeData = connectedEdges.map(edge => ({
         id: edge.id(),
@@ -196,11 +184,9 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     const handleEdgeTap = (evt) => {
       const edge = evt.target
       
-      // 清除之前的高亮和选择
       cy.elements().removeClass('highlighted')
       cy.elements().unselect()
       
-      // 选中当前边（蓝色）
       edge.select()
       
       onElementSelect({
@@ -226,72 +212,70 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       }
     }
 
-    // 绑定事件
     cy.on('tap', 'node', handleNodeTap)
     cy.on('tap', 'edge', handleEdgeTap)
     cy.on('tap', handleBackgroundTap)
 
-    // 清理事件监听器
     return () => {
       cy.off('tap', 'node', handleNodeTap)
       cy.off('tap', 'edge', handleEdgeTap)
       cy.off('tap', handleBackgroundTap)
     }
-  }, []) // 空依赖数组，只设置一次事件监听器
+  }, [])
 
-  // 当数据变化时更新元素
   useEffect(() => {
     if (!cyRef.current || !data) return
 
     const cy = cyRef.current
     
-    // 移除所有旧元素
+    cy.stop()
+    
     cy.elements().remove()
     
-    // 添加新元素
     cy.add(data)
     
-    // 运行布局
-    cy.layout({
+    let layoutOptions = {
       name: layoutName,
-      idealEdgeLength: 250,
-      nodeRepulsion: 12000,
-      edgeElasticity: 0.25,
-      nestingFactor: 0.1,
-      gravity: 0.1,
-      numIter: 3000,
-      tile: true,
       animate: 'end',
-      animationDuration: 1000,
-      randomize: false,
-      tilingPaddingVertical: 20,
-      tilingPaddingHorizontal: 20
-    }).run()
-  }, [data]) // 只在数据变化时重新布局
-
-  // 当布局算法变化时重新运行布局
-  useEffect(() => {
-    if (!cyRef.current || !data) return
+      animationDuration: 500,
+      fit: true,
+      padding: 50,
+      randomize: false
+    }
     
-    const cy = cyRef.current
-    cy.layout({
-      name: layoutName,
-      idealEdgeLength: 250,
-      nodeRepulsion: 12000,
-      edgeElasticity: 0.25,
-      nestingFactor: 0.1,
-      gravity: 0.1,
-      numIter: 3000,
-      tile: true,
-      animate: 'end',
-      animationDuration: 1000,
-      randomize: false,
-      tilingPaddingVertical: 20,
-      tilingPaddingHorizontal: 20
-    }).run()
-  }, [layoutName]) // 只在布局名称变化时重新布局
+    if (layoutName === 'cose-bilkent') {
+      layoutOptions = {
+        ...layoutOptions,
+        idealEdgeLength: 200,
+        nodeRepulsion: 8000,
+        edgeElasticity: 0.45,
+        nestingFactor: 0.1,
+        gravity: 0.25,
+        numIter: 2500,
+        tile: true,
+        tilingPaddingVertical: 10,
+        tilingPaddingHorizontal: 10
+      }
+    } else if (layoutName === 'cola') {
+      layoutOptions = {
+        ...layoutOptions,
+        nodeSpacing: 100,
+        edgeLength: 200,
+        animate: true,
+        maxSimulationTime: 4000
+      }
+    }
+    
+    const layout = cy.layout(layoutOptions)
+    layout.run()
+    
+    layout.one('layoutstop', () => {
+      setTimeout(() => {
+        cy.fit(null, 50)
+      }, 100)
+    })
+  }, [data, layoutName])
 
-  // 当需要聚焦到特定节点时
   useEffect(() => {
     if (!cyRef.current || !focusNodeId) return
     
@@ -299,25 +283,21 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     const node = cy.getElementById(focusNodeId)
     
     if (node.length > 0) {
-      // 清除之前的高亮
       cy.elements().removeClass('highlighted')
       cy.elements().unselect()
       
-      // 高亮节点及其邻居
       const neighbors = node.neighborhood()
       node.addClass('highlighted')
       neighbors.addClass('highlighted')
-      
-      // 聚焦到节点（放大并居中，减小padding避免放大过度）
+
       cy.animate({
         fit: {
-          eles: node.neighborhood(), // 包括邻居节点
-          padding: 50 // 减小padding
+          eles: node.neighborhood(),
+          padding: 50
         },
         duration: 500
       })
       
-      // 触发节点选择事件
       const connectedEdges = node.connectedEdges()
       const edgeData = connectedEdges.map(edge => ({
         id: edge.id(),
@@ -341,11 +321,10 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
         }
       })
     }
-  }, [focusNodeId]) // 只依赖 focusNodeId，不依赖 onElementSelect
+  }, [focusNodeId])
 
   const handleLayoutChange = (newLayout) => {
     setLayoutName(newLayout)
-    // 移除手动运行布局，让useEffect统一处理
   }
 
   const handleFitView = () => {

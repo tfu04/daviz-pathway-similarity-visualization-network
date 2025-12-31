@@ -8,7 +8,6 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
   const [searching, setSearching] = useState(false)
   const [showResults, setShowResults] = useState(false)
 
-  // 防抖搜索
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([])
@@ -46,7 +45,6 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
   }
 
   const handleSearchResultClick = (diseaseId) => {
-    // 触发聚焦到选中的疾病
     if (onSearchSelect) {
       onSearchSelect(diseaseId)
     }

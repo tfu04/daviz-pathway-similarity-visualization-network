@@ -14,19 +14,17 @@ function App() {
   const [error, setError] = useState(null)
   const [focusNodeId, setFocusNodeId] = useState(null)
   const [filters, setFilters] = useState({
-    minWeight: 8400, // 默认75th百分位
+    minWeight: 8400,
     interpretability: 'all', // 'all', 'YES', 'NO'
     limit: 500
   })
 
-  // 加载初始数据和统计信息
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
         
-        // 并行获取数据和统计信息
         const [data, stats] = await Promise.all([
           getNetworkData({ min_weight: filters.minWeight, limit: filters.limit }),
           getStatistics()
@@ -37,7 +35,7 @@ function App() {
         setStatistics(stats)
       } catch (err) {
         console.error('Failed to fetch data:', err)
-        setError(err.message || '加载数据失败')
+        setError(err.message || 'Failed to fetch data')
       } finally {
         setLoading(false)
       }
@@ -46,7 +44,6 @@ function App() {
     fetchData()
   }, [])
 
-  // 应用过滤器
   useEffect(() => {
     if (!networkData) return
 
@@ -67,7 +64,7 @@ function App() {
         setFilteredData(data)
       } catch (err) {
         console.error('Failed to apply filters:', err)
-        setError(err.message || '应用过滤器失败')
+        setError(err.message || 'Failed to apply filters')
       } finally {
         setLoading(false)
       }
@@ -86,7 +83,6 @@ function App() {
 
   const handleSearchSelect = (diseaseId) => {
     setFocusNodeId(diseaseId)
-    // 清除focusNodeId以便下次搜索能再次触发
     setTimeout(() => setFocusNodeId(null), 100)
   }
 

@@ -8,7 +8,6 @@ const DetailPanel = ({ element }) => {
 
   useEffect(() => {
     if (element?.type === 'edge') {
-      // 直接使用传递的数据，不需要额外API调用
       setEdgeDetails(element)
     } else {
       setEdgeDetails(null)
@@ -19,7 +18,6 @@ const DetailPanel = ({ element }) => {
     try {
       setLoading(true)
       const response = await getEdgeDetails(edgeId)
-      // API返回的是 {edge: {data: {...}}, ...}
       const edgeData = response.edge.data
       setEdgeDetails({
         ...element,
