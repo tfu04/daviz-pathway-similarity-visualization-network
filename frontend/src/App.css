@@ -107,20 +107,3 @@
     flex: 1;
   }
 }
-
-@media (prefers-color-scheme: light) {
-  .app-header {
-    background-color: #f5f5f5;
-    border-bottom-color: #e0e0e0;
-  }
-  
-  .left-panel,
-  .right-panel {
-    background-color: #fafafa;
-    border-color: #e0e0e0;
-  }
-  
-  .header-stats {
-    color: #666;
-  }
-}

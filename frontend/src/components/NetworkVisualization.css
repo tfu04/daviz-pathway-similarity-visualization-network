@@ -130,19 +130,3 @@
     right: 0.5rem;
   }
 }
-
-@media (prefers-color-scheme: light) {
-  .network-container {
-    background-color: #f5f5f5;
-  }
-  
-  .network-controls,
-  .network-legend {
-    background-color: rgba(255, 255, 255, 0.95);
-  }
-  
-  .control-group label,
-  .legend-item {
-    color: #666;
-  }
-}
