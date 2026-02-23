@@ -16,7 +16,7 @@ if errorlevel 1 (
 )
 
 echo [1/4] Checking backend directory...
-cd /d "%~dp0backend"
+cd /d "%~dp0"
 if not exist "main.py" (
     echo ERROR: backend/main.py not found
     pause

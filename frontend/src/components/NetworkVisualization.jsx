@@ -1,17 +1,156 @@
 import { useEffect, useRef, useState } from 'react'
 import cytoscape from 'cytoscape'
-import cola from 'cytoscape-cola'
-import coseBilkent from 'cytoscape-cose-bilkent'
 import './NetworkVisualization.css'
 
-// Register layout algorithms
-cytoscape.use(cola)
-cytoscape.use(coseBilkent)
+const getCyStyle = (isDarkMode) => {
+  const colors = {
+    success: isDarkMode ? '#56c271' : '#3da65a',
+    successHover: isDarkMode ? '#72d38a' : '#2f8f4c',
+    muted: isDarkMode ? '#8f99a3' : '#7d8793',
+    mutedHover: isDarkMode ? '#a7b1ba' : '#697480',
+    primary: '#2196F3',
+    warning: '#FFA726',
+    text: isDarkMode ? '#ffffff' : '#1a1a1a',
+    textOutline: isDarkMode ? '#000000' : '#ffffff',
+    edgeMuted: isDarkMode ? '#7d8793' : '#97a1ac'
+  }
+
+  return [
+    // Node styles
+    {
+      selector: 'node',
+      style: {
+        'background-color': (ele) => {
+          const interpretable = ele.data('interpretable')
+          return interpretable === 'YES' ? colors.success : colors.muted
+        },
+        'label': 'data(label)',
+        'width': 50,
+        'height': 50,
+        'font-size': '11px',
+        'text-valign': 'bottom',
+        'text-halign': 'center',
+        'text-margin-y': 8,
+        'text-wrap': 'wrap',
+        'text-max-width': '120px',
+        'color': colors.text,
+        'text-outline-color': colors.textOutline,
+        'text-outline-width': 2.5,
+        'overlay-padding': '6px',
+        'z-index': 10,
+        'min-zoomed-font-size': 8
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-width': 3,
+        'border-color': colors.primary,
+        'background-color': (ele) => {
+          const interpretable = ele.data('interpretable')
+          return interpretable === 'YES' ? colors.successHover : colors.mutedHover
+        }
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': (ele) => {
+          const weight = ele.data('weight') || 0
+          return Math.max(1.1, Math.log(weight + 1) * 0.34)
+        },
+        'line-color': (ele) => {
+          const interpretable = ele.data('interpretable')
+          return interpretable === 'YES' ? colors.successHover : colors.edgeMuted
+        },
+        'target-arrow-color': (ele) => {
+          const interpretable = ele.data('interpretable')
+          return interpretable === 'YES' ? colors.successHover : colors.edgeMuted
+        },
+        'curve-style': 'bezier',
+        'opacity': isDarkMode ? 0.52 : 0.62
+      }
+    },
+    {
+      selector: 'edge:selected',
+      style: {
+        'line-color': colors.primary,
+        'target-arrow-color': colors.primary,
+        'width': (ele) => {
+          const weight = ele.data('weight') || 0
+          return Math.max(1.5, Math.log(weight + 1) * 0.4)
+        },
+        'opacity': 1,
+        'z-index': 999
+      }
+    },
+    {
+      selector: 'node.highlighted',
+      style: {
+        'border-width': 2,
+        'border-color': colors.warning,
+        'z-index': 9999
+      }
+    },
+    {
+      selector: 'edge.highlighted',
+      style: {
+        'line-color': colors.warning,
+        'target-arrow-color': colors.warning,
+        'width': (ele) => {
+          const weight = ele.data('weight') || 0
+          return Math.max(1.5, Math.log(weight + 1) * 0.4)
+        },
+        'opacity': 0.8,
+        'z-index': 999
+      }
+    },
+    {
+      selector: 'node.dimmed',
+      style: {
+        'opacity': 0.2
+      }
+    },
+    {
+      selector: 'edge.dimmed',
+      style: {
+        'opacity': 0.12
+      }
+    }
+  ]
+}
 
 const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) => {
   const containerRef = useRef(null)
   const cyRef = useRef(null)
-  const [layoutName, setLayoutName] = useState('cose-bilkent')
+  const [layoutName, setLayoutName] = useState('circle')
+  const [isDarkMode, setIsDarkMode] = useState(
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+
+  // Listen for theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => setIsDarkMode(e.matches)
+    
+    // Modern browsers
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    } 
+    // Fallback for older browsers
+    else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleChange)
+      return () => mediaQuery.removeListener(handleChange)
+    }
+  }, [])
+
+  // Update Cytoscape style when theme changes
+  useEffect(() => {
+    if (cyRef.current) {
+      cyRef.current.style(getCyStyle(isDarkMode))
+    }
+  }, [isDarkMode])
 
   // Initialize Cytoscape instance (runs once)
   useEffect(() => {
@@ -22,97 +161,7 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     const cy = cytoscape({
       container: containerRef.current,
       elements: data,
-      style: [
-        // Node styles
-        {
-          selector: 'node',
-          style: {
-            'background-color': (ele) => {
-              const interpretable = ele.data('interpretable')
-              return interpretable === 'YES' ? '#4CAF50' : '#9E9E9E'
-            },
-            'label': 'data(label)',
-            'width': 50,
-            'height': 50,
-            'font-size': '11px',
-            'text-valign': 'bottom',
-            'text-halign': 'center',
-            'text-margin-y': 8,
-            'text-wrap': 'wrap',
-            'text-max-width': '120px',
-            'color': '#ffffff',
-            'text-outline-color': '#000000',
-            'text-outline-width': 2.5,
-            'overlay-padding': '6px',
-            'z-index': 10,
-            'min-zoomed-font-size': 8
-          }
-        },
-        {
-          selector: 'node:selected',
-          style: {
-            'border-width': 3,
-            'border-color': '#2196F3',
-            'background-color': (ele) => {
-              const interpretable = ele.data('interpretable')
-              return interpretable === 'YES' ? '#66BB6A' : '#BDBDBD'
-            }
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': (ele) => {
-              const weight = ele.data('weight') || 0
-              return Math.max(0.5, Math.log(weight + 1) * 0.3)
-            },
-            'line-color': (ele) => {
-              const interpretable = ele.data('interpretable')
-              return interpretable === 'YES' ? '#66BB6A' : '#616161'
-            },
-            'target-arrow-color': (ele) => {
-              const interpretable = ele.data('interpretable')
-              return interpretable === 'YES' ? '#66BB6A' : '#616161'
-            },
-            'curve-style': 'bezier',
-            'opacity': 0.3
-          }
-        },
-        {
-          selector: 'edge:selected',
-          style: {
-            'line-color': '#2196F3',
-            'target-arrow-color': '#2196F3',
-            'width': (ele) => {
-              const weight = ele.data('weight') || 0
-              return Math.max(1.5, Math.log(weight + 1) * 0.4)
-            },
-            'opacity': 1,
-            'z-index': 999
-          }
-        },
-        {
-          selector: 'node.highlighted',
-          style: {
-            'border-width': 2,
-            'border-color': '#FFA726',
-            'z-index': 9999
-          }
-        },
-        {
-          selector: 'edge.highlighted',
-          style: {
-            'line-color': '#FFA726',
-            'target-arrow-color': '#FFA726',
-            'opacity': 0.8,
-            'width': (ele) => {
-              const weight = ele.data('weight') || 0
-              return Math.max(1, Math.log(weight + 1) * 0.35)
-            },
-            'z-index': 9999
-          }
-        }
-      ],
+      style: getCyStyle(isDarkMode),
       layout: {
         name: layoutName,
         idealEdgeLength: 250,
@@ -234,36 +283,13 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     
     cy.add(data)
     
-    let layoutOptions = {
+    const layoutOptions = {
       name: layoutName,
       animate: 'end',
       animationDuration: 500,
       fit: true,
       padding: 50,
       randomize: false
-    }
-    
-    if (layoutName === 'cose-bilkent') {
-      layoutOptions = {
-        ...layoutOptions,
-        idealEdgeLength: 200,
-        nodeRepulsion: 8000,
-        edgeElasticity: 0.45,
-        nestingFactor: 0.1,
-        gravity: 0.25,
-        numIter: 2500,
-        tile: true,
-        tilingPaddingVertical: 10,
-        tilingPaddingHorizontal: 10
-      }
-    } else if (layoutName === 'cola') {
-      layoutOptions = {
-        ...layoutOptions,
-        nodeSpacing: 100,
-        edgeLength: 200,
-        animate: true,
-        maxSimulationTime: 4000
-      }
     }
     
     const layout = cy.layout(layoutOptions)
@@ -367,8 +393,6 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
             onChange={(e) => handleLayoutChange(e.target.value)}
             disabled={loading || !data}
           >
-            <option value="cose-bilkent">COSE Bilkent</option>
-            <option value="cola">Cola</option>
             <option value="circle">Circle</option>
             <option value="grid">Grid</option>
             <option value="random">Random</option>
@@ -392,11 +416,11 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       
       <div className="network-legend">
         <div className="legend-item">
-          <span className="legend-color" style={{ backgroundColor: '#4CAF50' }}></span>
+          <span className="legend-color" style={{ backgroundColor: 'var(--accent-success)' }}></span>
           <span>Interpretable (YES)</span>
         </div>
         <div className="legend-item">
-          <span className="legend-color" style={{ backgroundColor: '#9E9E9E' }}></span>
+          <span className="legend-color" style={{ backgroundColor: 'var(--text-muted)' }}></span>
           <span>Non-interpretable (NO)</span>
         </div>
       </div>

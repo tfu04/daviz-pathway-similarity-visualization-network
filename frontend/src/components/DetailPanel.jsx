@@ -2,9 +2,26 @@ import { useState, useEffect } from 'react'
 import { getEdgeDetails } from '../services/api'
 import './DetailPanel.css'
 
+const INITIAL_CONNECTIONS = 20
+const CONNECTIONS_STEP = 20
+
+const formatAvgWeight = (value) => {
+  if (!Number.isFinite(value)) return '-'
+
+  if (value >= 10000) {
+    return new Intl.NumberFormat(undefined, {
+      notation: 'compact',
+      maximumFractionDigits: 2
+    }).format(value)
+  }
+
+  return value.toLocaleString(undefined, { maximumFractionDigits: 2 })
+}
+
 const DetailPanel = ({ element }) => {
   const [edgeDetails, setEdgeDetails] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [visibleConnections, setVisibleConnections] = useState(INITIAL_CONNECTIONS)
 
   useEffect(() => {
     if (element?.type === 'edge') {
@@ -13,6 +30,10 @@ const DetailPanel = ({ element }) => {
       setEdgeDetails(null)
     }
   }, [element])
+
+  useEffect(() => {
+    setVisibleConnections(INITIAL_CONNECTIONS)
+  }, [element?.id, element?.type])
 
   const fetchEdgeDetails = async (edgeId) => {
     try {
@@ -47,9 +68,6 @@ const DetailPanel = ({ element }) => {
       <div className="detail-panel">
         <div className="panel-header">
           <h3>Node Details</h3>
-          <span className={`badge ${element.interpretable === 'YES' ? 'badge-success' : 'badge-default'}`}>
-            {element.interpretable === 'YES' ? 'Interpretable' : 'Non-interpretable'}
-          </span>
         </div>
 
         <div className="panel-content">
@@ -80,8 +98,10 @@ const DetailPanel = ({ element }) => {
                 <div className="stat-value">{element.statistics.interpretableEdges}</div>
                 <div className="stat-label">Interpretable</div>
               </div>
-              <div className="stat-card">
-                <div className="stat-value">{element.statistics.avgWeight.toFixed(4)}</div>
+              <div className="stat-card avg-weight-card">
+                <div className="stat-value" title={element.statistics.avgWeight.toFixed(4)}>
+                  {formatAvgWeight(element.statistics.avgWeight)}
+                </div>
                 <div className="stat-label">Avg Weight</div>
               </div>
             </div>
@@ -90,7 +110,7 @@ const DetailPanel = ({ element }) => {
           <div className="info-section">
             <h4>Connected Diseases ({element.edges.length})</h4>
             <div className="edges-list">
-              {element.edges.slice(0, 20).map((edge, idx) => (
+              {element.edges.slice(0, visibleConnections).map((edge, idx) => (
                 <div key={idx} className="edge-item">
                   <div className="edge-header">
                     <span className="edge-disease">
@@ -105,10 +125,14 @@ const DetailPanel = ({ element }) => {
                   </div>
                 </div>
               ))}
-              {element.edges.length > 20 && (
-                <div className="more-indicator">
-                  {element.edges.length - 20} more connections...
-                </div>
+              {element.edges.length > visibleConnections && (
+                <button
+                  type="button"
+                  className="more-button"
+                  onClick={() => setVisibleConnections((count) => count + CONNECTIONS_STEP)}
+                >
+                  Show {Math.min(CONNECTIONS_STEP, element.edges.length - visibleConnections)} more ({element.edges.length - visibleConnections} remaining)
+                </button>
               )}
             </div>
           </div>

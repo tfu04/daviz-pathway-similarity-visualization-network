@@ -2,7 +2,7 @@
   width: 100%;
   height: 100%;
   position: relative;
-  background-color: #1a1a1a;
+  background-color: var(--bg-main);
 }
 
 .cytoscape-container {
@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -27,8 +27,8 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #333;
-  border-top-color: #646cff;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -39,22 +39,25 @@
 
 .loading-overlay p {
   margin-top: 1rem;
-  color: #aaa;
+  color: var(--text-inverse);
   font-size: 0.9rem;
 }
 
 .network-controls {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
   display: flex;
   gap: 1rem;
   align-items: center;
-  background-color: rgba(30, 30, 30, 0.95);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-panel);
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  backdrop-filter: blur(6px);
 }
 
 .control-group {
@@ -65,7 +68,7 @@
 
 .control-group label {
   font-size: 0.85rem;
-  color: #aaa;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -87,13 +90,13 @@
 
 .network-legend {
   position: absolute;
-  bottom: 1rem;
+  bottom: 5.2rem;
   right: 1rem;
   z-index: 100;
-  background-color: rgba(30, 30, 30, 0.95);
+  background-color: var(--bg-panel);
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .legend-item {
@@ -102,23 +105,24 @@
   gap: 0.5rem;
   margin: 0.25rem 0;
   font-size: 0.85rem;
-  color: #ccc;
+  color: var(--text-secondary);
 }
 
 .legend-color {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 2px solid #555;
+  border: 2px solid var(--border-color);
 }
 
 @media (max-width: 768px) {
   .network-controls {
     flex-direction: column;
     align-items: stretch;
-    top: 0.5rem;
+    bottom: 0.5rem;
     left: 0.5rem;
     right: 0.5rem;
+    transform: none;
   }
   
   .control-buttons {
@@ -126,7 +130,7 @@
   }
   
   .network-legend {
-    bottom: 0.5rem;
+    bottom: 6.5rem;
     right: 0.5rem;
   }
 }

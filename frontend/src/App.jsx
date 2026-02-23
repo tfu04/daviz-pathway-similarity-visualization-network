@@ -13,6 +13,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [focusNodeId, setFocusNodeId] = useState(null)
+  const [rightPanelWidth, setRightPanelWidth] = useState(360)
+  const [isResizing, setIsResizing] = useState(false)
   const [filters, setFilters] = useState({
     minWeight: 8400,
     interpretability: 'all', // 'all', 'YES', 'NO'
@@ -86,6 +88,34 @@ function App() {
     setTimeout(() => setFocusNodeId(null), 100)
   }
 
+  useEffect(() => {
+    if (!isResizing) return
+
+    const handleMouseMove = (event) => {
+      const minWidth = 300
+      const maxWidth = 620
+      const newWidth = window.innerWidth - event.clientX
+      const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth))
+      setRightPanelWidth(clampedWidth)
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing])
+
   if (error) {
     return (
       <div className="error-container">
@@ -131,7 +161,15 @@ function App() {
           />
         </div>
 
-        <div className="right-panel">
+        <div
+          className={`right-panel-resizer ${isResizing ? 'active' : ''}`}
+          onMouseDown={() => setIsResizing(true)}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize details panel"
+        />
+
+        <div className="right-panel" style={{ width: `${rightPanelWidth}px` }}>
           <DetailPanel
             element={selectedElement}
           />
