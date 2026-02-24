@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { searchDiseases } from '../services/api'
 import './FilterPanel.css'
 
@@ -7,6 +7,11 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
   const [showResults, setShowResults] = useState(false)
+  const [pendingMinWeight, setPendingMinWeight] = useState(filters.minWeight)
+
+  useEffect(() => {
+    setPendingMinWeight(filters.minWeight)
+  }, [filters.minWeight])
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -33,7 +38,13 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
   }, [searchQuery])
 
   const handleWeightChange = (e) => {
-    onFilterChange({ minWeight: parseFloat(e.target.value) })
+    setPendingMinWeight(parseFloat(e.target.value))
+  }
+
+  const commitWeightChange = () => {
+    if (pendingMinWeight !== filters.minWeight) {
+      onFilterChange({ minWeight: pendingMinWeight })
+    }
   }
 
   const handleInterpretabilityChange = (e) => {
@@ -96,21 +107,24 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
               min="0"
               max="20000"
               step="100"
-              value={filters.minWeight}
+              value={pendingMinWeight}
               onChange={handleWeightChange}
+              onMouseUp={commitWeightChange}
+              onTouchEnd={commitWeightChange}
+              onBlur={commitWeightChange}
               disabled={loading}
               className="weight-slider"
             />
             <div className="slider-labels">
               <span>0</span>
               <span className="current-value">
-                {filters.minWeight.toFixed(0)}
+                {pendingMinWeight.toFixed(0)}
               </span>
               <span>20k</span>
             </div>
           </div>
           <p className="filter-description">
-            Minimum weight: <strong>{filters.minWeight.toFixed(0)}</strong>
+            Minimum weight: <strong>{pendingMinWeight.toFixed(0)}</strong>
           </p>
           
           {statistics && (
@@ -139,28 +153,40 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
 
         <div className="quick-filters">
           <button
-            onClick={() => onFilterChange({ minWeight: 0 })}
+            onClick={() => {
+              setPendingMinWeight(0)
+              onFilterChange({ minWeight: 0 })
+            }}
             disabled={loading}
             className={filters.minWeight === 0 ? 'active' : ''}
           >
             All
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 3600 })}
+            onClick={() => {
+              setPendingMinWeight(3600)
+              onFilterChange({ minWeight: 3600 })
+            }}
             disabled={loading}
             className={filters.minWeight === 3600 ? 'active' : ''}
           >
             Median
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 8400 })}
+            onClick={() => {
+              setPendingMinWeight(8400)
+              onFilterChange({ minWeight: 8400 })
+            }}
             disabled={loading}
             className={filters.minWeight === 8400 ? 'active' : ''}
           >
             75%
           </button>
           <button
-            onClick={() => onFilterChange({ minWeight: 16000 })}
+            onClick={() => {
+              setPendingMinWeight(16000)
+              onFilterChange({ minWeight: 16000 })
+            }}
             disabled={loading}
             className={filters.minWeight === 16000 ? 'active' : ''}
           >
@@ -244,11 +270,14 @@ const FilterPanel = ({ filters, statistics, onFilterChange, onSearchSelect, load
       <div className="panel-section">
         <button
           className="reset-button"
-          onClick={() => onFilterChange({
-            minWeight: 8400,
-            interpretability: 'all',
-            limit: 500
-          })}
+          onClick={() => {
+            setPendingMinWeight(8400)
+            onFilterChange({
+              minWeight: 8400,
+              interpretability: 'all',
+              limit: 500
+            })
+          }}
           disabled={loading}
         >
           Reset Filters

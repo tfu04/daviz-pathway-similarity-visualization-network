@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import NetworkVisualization from './components/NetworkVisualization'
 import DetailPanel from './components/DetailPanel'
 import FilterPanel from './components/FilterPanel'
@@ -6,6 +6,7 @@ import { getNetworkData, getStatistics } from './services/api'
 import './App.css'
 
 function App() {
+  const pendingFilterDataRef = useRef(null)
   const [networkData, setNetworkData] = useState(null)
   const [filteredData, setFilteredData] = useState(null)
   const [selectedElement, setSelectedElement] = useState(null)
@@ -50,6 +51,19 @@ function App() {
     if (!networkData) return
 
     const applyFilters = async () => {
+      const pendingFilterData = pendingFilterDataRef.current
+      if (
+        pendingFilterData &&
+        pendingFilterData.filters.minWeight === filters.minWeight &&
+        pendingFilterData.filters.interpretability === filters.interpretability &&
+        pendingFilterData.filters.limit === filters.limit
+      ) {
+        setFilteredData(pendingFilterData.data)
+        pendingFilterDataRef.current = null
+        setLoading(false)
+        return
+      }
+
       try {
         setLoading(true)
         
@@ -83,9 +97,61 @@ function App() {
     setFilters(prev => ({ ...prev, ...newFilters }))
   }
 
-  const handleSearchSelect = (diseaseId) => {
+  const focusNode = (diseaseId) => {
     setFocusNodeId(diseaseId)
     setTimeout(() => setFocusNodeId(null), 100)
+  }
+
+  const hasNodeInData = (data, diseaseId) => {
+    return !!data?.nodes?.some((node) => node?.data?.id === diseaseId)
+  }
+
+  const handleSearchSelect = async (diseaseId) => {
+    if (!diseaseId) return
+
+    if (hasNodeInData(filteredData, diseaseId)) {
+      focusNode(diseaseId)
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const candidateFilters = [
+        { ...filters, limit: 1055 },
+        { ...filters, minWeight: 0, limit: 1055 },
+        { minWeight: 0, interpretability: 'all', limit: 1055 }
+      ]
+
+      for (const nextFilters of candidateFilters) {
+        const params = {
+          min_weight: nextFilters.minWeight,
+          limit: nextFilters.limit
+        }
+
+        if (nextFilters.interpretability !== 'all') {
+          params.interpretability = nextFilters.interpretability
+        }
+
+        const data = await getNetworkData(params)
+        if (hasNodeInData(data, diseaseId)) {
+          pendingFilterDataRef.current = {
+            filters: nextFilters,
+            data
+          }
+          setFilteredData(data)
+          setFilters(nextFilters)
+          setTimeout(() => focusNode(diseaseId), 450)
+          return
+        }
+      }
+
+      focusNode(diseaseId)
+    } catch (err) {
+      console.error('Failed to focus searched disease:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {

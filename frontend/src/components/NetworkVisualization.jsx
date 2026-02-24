@@ -309,6 +309,8 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
     const node = cy.getElementById(focusNodeId)
     
     if (node.length > 0) {
+      cy.fit(null, 50)
+
       cy.elements().removeClass('highlighted')
       cy.elements().unselect()
       
@@ -317,9 +319,8 @@ const NetworkVisualization = ({ data, loading, onElementSelect, focusNodeId }) =
       neighbors.addClass('highlighted')
 
       cy.animate({
-        fit: {
-          eles: node.neighborhood(),
-          padding: 50
+        center: {
+          eles: node
         },
         duration: 500
       })
